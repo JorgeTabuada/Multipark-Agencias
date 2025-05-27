@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -26,6 +25,7 @@ const DifferencesPage = () => {
     {
       name: 'Airpark',
       color: 'from-blue-500 to-blue-600',
+      logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png',
       rating: 4.8,
       description: 'Serviço premium com cobertura total',
       features: [
@@ -40,6 +40,7 @@ const DifferencesPage = () => {
     {
       name: 'Redpark',
       color: 'from-red-500 to-red-600',
+      logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png',
       rating: 4.5,
       description: 'Opção económica e eficiente',
       features: [
@@ -54,6 +55,7 @@ const DifferencesPage = () => {
     {
       name: 'Skypark',
       color: 'from-purple-500 to-purple-600',
+      logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png',
       rating: 5.0,
       description: 'Experiência VIP completa',
       features: [
@@ -91,8 +93,12 @@ const DifferencesPage = () => {
                 <div className={`bg-gradient-to-r ${service.color} p-6 text-white`}>
                   <div className="text-center mb-4">
                     <h3 className="text-2xl font-bold mb-2">{service.name}</h3>
-                    <div className="w-full h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3">
-                      <span className="text-sm opacity-75">Logo aqui</span>
+                    <div className="w-full h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3 p-2">
+                      <img 
+                        src={service.logo} 
+                        alt={`${service.name} logo`} 
+                        className="max-h-8 max-w-full object-contain"
+                      />
                     </div>
                     <div className="flex items-center justify-center space-x-1">
                       {[...Array(5)].map((_, i) => (

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -26,6 +25,7 @@ const PricingPage = () => {
     {
       name: 'Airpark',
       color: 'from-blue-500 to-blue-600',
+      logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png',
       prices: {
         hourly: '2.50€',
         daily: '15.00€',
@@ -42,6 +42,7 @@ const PricingPage = () => {
     {
       name: 'Redpark',
       color: 'from-red-500 to-red-600',
+      logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png',
       prices: {
         hourly: '2.00€',
         daily: '12.00€',
@@ -58,6 +59,7 @@ const PricingPage = () => {
     {
       name: 'Skypark',
       color: 'from-purple-500 to-purple-600',
+      logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png',
       prices: {
         hourly: '3.00€',
         daily: '18.00€',
@@ -96,8 +98,12 @@ const PricingPage = () => {
               <div key={plan.name} className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-blue-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
                 <div className={`bg-gradient-to-r ${plan.color} p-6 text-white text-center`}>
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <div className="w-full h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                    <span className="text-sm opacity-75">Logo aqui</span>
+                  <div className="w-full h-12 bg-white/20 rounded-lg flex items-center justify-center p-2">
+                    <img 
+                      src={plan.logo} 
+                      alt={`${plan.name} logo`} 
+                      className="max-h-8 max-w-full object-contain"
+                    />
                   </div>
                 </div>
                 

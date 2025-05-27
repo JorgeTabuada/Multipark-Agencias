@@ -36,12 +36,13 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = true, showLogoutButton
               </button>
             )}
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
+              <div className="h-12 flex items-center">
+                <img 
+                  src="/lovable-uploads/8526bed4-aa2e-43bb-b530-31569f85f461.png" 
+                  alt="Multipark Logo" 
+                  className="h-10"
+                />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Multipark
-              </h1>
             </div>
           </div>
           

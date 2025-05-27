@@ -4,10 +4,11 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import { Car, DollarSign, Info, Phone } from 'lucide-react';
+import { getRedirectUrl } from '../utils/redirectUtils';
 
 const CityPage = () => {
   const { cityName } = useParams<{ cityName: string }>();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,10 +23,32 @@ const CityPage = () => {
 
   const cityDisplayName = cityName ? cityName.charAt(0).toUpperCase() + cityName.slice(1) : '';
 
+  const handleParkingServiceClick = (brand: string) => {
+    if (user && cityName) {
+      const redirectUrl = getRedirectUrl(user.name, cityName, brand);
+      window.open(redirectUrl, '_blank');
+    }
+  };
+
   const parkingServices = [
-    { name: 'Airpark', color: 'from-blue-500 to-blue-600', icon: Car },
-    { name: 'Redpark', color: 'from-red-500 to-red-600', icon: Car },
-    { name: 'Skypark', color: 'from-purple-500 to-purple-600', icon: Car }
+    { 
+      name: 'Airpark', 
+      color: 'from-blue-500 to-blue-600', 
+      icon: Car,
+      logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png'
+    },
+    { 
+      name: 'Redpark', 
+      color: 'from-red-500 to-red-600', 
+      icon: Car,
+      logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png'
+    },
+    { 
+      name: 'Skypark', 
+      color: 'from-purple-500 to-purple-600', 
+      icon: Car,
+      logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png'
+    }
   ];
 
   const infoServices = [
@@ -58,6 +81,7 @@ const CityPage = () => {
               {parkingServices.map((service) => (
                 <div
                   key={service.name}
+                  onClick={() => handleParkingServiceClick(service.name)}
                   className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
                 >
                   <div className={`bg-gradient-to-br ${service.color} p-8 text-white min-h-[180px] flex flex-col justify-center items-center`}>
@@ -65,8 +89,12 @@ const CityPage = () => {
                       <service.icon size={32} />
                     </div>
                     <h4 className="text-xl font-bold mb-2">{service.name}</h4>
-                    <div className="w-full h-12 bg-white/20 rounded-lg flex items-center justify-center mb-2">
-                      <span className="text-sm opacity-75">Logo aqui</span>
+                    <div className="w-full h-12 bg-white/20 rounded-lg flex items-center justify-center mb-2 p-2">
+                      <img 
+                        src={service.logo} 
+                        alt={`${service.name} logo`} 
+                        className="max-h-8 max-w-full object-contain"
+                      />
                     </div>
                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
