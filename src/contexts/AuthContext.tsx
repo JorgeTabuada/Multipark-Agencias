@@ -27,16 +27,43 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Base de dados de utilizadores
+const validUsers = [
+  { name: "AzulViajante", email: "guimaraes1@bestravel.pt", password: "Multipak*" },
+  { name: "Bestravel Castelo Branco", email: "castelobranco@bestravel.pt", password: "Multipak*" },
+  { name: "Bestravel Évora", email: "evora.mafalda@bestravel.pt", password: "Multipak*" },
+  { name: "Definir datas viagens e turismo", email: "francisco@ddviagens.com", password: "Multipak*" },
+  { name: "Godiscover Castelo Branco", email: "castelobranco@godiscover.pt", password: "Multipak*" },
+  { name: "Godiscover Viseu", email: "viseu@godiscover.pt", password: "Multipak*" },
+  { name: "Guru Viagens", email: "geral@gurudasviagens.pt", password: "Multipak*" },
+  { name: "Iupy Travel", email: "carolinasousa@iupytravel.pt", password: "Multipak*" },
+  { name: "lealtours", email: "andre@lealtours.com", password: "Multipak*" },
+  { name: "Léguas Cordeais", email: "agencia@leguasecardeais.pt", password: "Multipak*" },
+  { name: "Leiriviagens", email: "marco.velez@leiriviagem.pt", password: "Multipak*" },
+  { name: "Oeste Viagens", email: "geral@oesteviagens.pt", password: "Multipak*" },
+  { name: "QVIAGEM", email: "guia@qviagem.com", password: "Multipak*" },
+  { name: "SternTravel", email: "reservas@sterntravel.pt", password: "Multipak*" },
+  { name: "Truetraveller", email: "daniel.tavares@truetraveller.pt", password: "Multipak*" },
+  { name: "viagens & Cia", email: "geral.viagensecia@gmail.com", password: "Multipak*" },
+  { name: "viagens para si", email: "viagensparasi@gmail.com", password: "Multipak*" },
+  { name: "Bestravel Maia", email: "maia.gerencia@bestravel.pt", password: "Multipak*" },
+  { name: "La Viagens, Lda", email: "geral@laviagens.pt", password: "Multipak*" },
+  { name: "Mérito de Júpiter Lda", email: "87viagens@gmail.com", password: "Multipak*" },
+  { name: "NZTravel", email: "lidia@nztravel.com.pt", password: "Multipak*" },
+  { name: "QVIAGEM Guimarães", email: "guimaraes@qviagem.com", password: "Multipak*" },
+  { name: "QVIAGEM Marinha Grande", email: "marinhagrande@qviagem.com", password: "Multipak*" }
+];
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulação de login - em produção seria uma chamada à API
-    if (email && password) {
-      const userName = email.split('@')[0];
+    const validUser = validUsers.find(u => u.email === email && u.password === password);
+    
+    if (validUser) {
       setUser({
-        name: userName.charAt(0).toUpperCase() + userName.slice(1),
-        email: email
+        name: validUser.name,
+        email: validUser.email
       });
       return true;
     }
