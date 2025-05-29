@@ -7,7 +7,7 @@ interface CampaignUrls {
   };
 }
 
-// Mapeamento completo de usuários para campaign IDs - corrigido para Lisboa
+// Mapeamento completo de usuários para campaign IDs - corrigido para Lisboa (links sem cidade específica são Lisboa)
 const campaignUrls: CampaignUrls = {
   'azulviajante': {
     'lisbon': {
