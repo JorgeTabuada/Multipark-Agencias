@@ -7,7 +7,7 @@ interface CampaignUrls {
   };
 }
 
-// Mapeamento completo de usuários para campaign IDs - corrigido para Lisboa (links sem cidade específica são Lisboa)
+// Mapeamento completo de usuários para campaign IDs
 const campaignUrls: CampaignUrls = {
   'azulviajante': {
     'lisbon': {
@@ -410,15 +410,11 @@ export const getRedirectUrl = (username: string, city: string, brand: string): s
   console.log(`Looking for: ${userKey} - ${cityKey} - ${brandKey}`);
   
   if (campaignUrls[userKey] && campaignUrls[userKey][cityKey] && campaignUrls[userKey][cityKey][brandKey]) {
-    const finalUrl = campaignUrls[userKey][cityKey][brandKey];
-    console.log(`Found URL: ${finalUrl}`);
-    return finalUrl;
+    return campaignUrls[userKey][cityKey][brandKey];
   }
   
   // URL padrão se não encontrar o mapeamento específico
-  const defaultUrl = `https://multipark.pt/book?city=${cityKey}&parkBrand=${brandKey}`;
-  console.log(`Using default URL: ${defaultUrl}`);
-  return defaultUrl;
+  return `https://multipark.pt/book?city=${cityKey}&parkBrand=${brandKey}`;
 };
 
 export const getUserSubdomain = (username: string): string => {
