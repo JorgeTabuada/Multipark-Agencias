@@ -20,9 +20,9 @@ const Dashboard = () => {
   }
 
   const cities = [
-    { name: 'Lisboa', color: 'from-blue-500 to-blue-600' },
-    { name: 'Porto', color: 'from-green-500 to-green-600' },
-    { name: 'Faro', color: 'from-orange-500 to-orange-600' }
+    { name: 'Lisboa', color: 'from-blue-500 to-blue-600', slug: 'lisbon' },
+    { name: 'Porto', color: 'from-green-500 to-green-600', slug: 'porto' },
+    { name: 'Faro', color: 'from-orange-500 to-orange-600', slug: 'faro' }
   ];
 
   return (
@@ -44,7 +44,7 @@ const Dashboard = () => {
             {cities.map((city) => (
               <Link
                 key={city.name}
-                to={`/city/${city.name.toLowerCase()}`}
+                to={`/city/${city.slug}`}
                 className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
               >
                 <div className={`bg-gradient-to-br ${city.color} p-8 text-white min-h-[200px] flex flex-col justify-center items-center`}>
