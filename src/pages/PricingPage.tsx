@@ -8,13 +8,17 @@ const PricingPage = () => {
   const { cityName } = useParams<{ cityName: string }>();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState(cityName || 'lisboa');
+  const [selectedCity, setSelectedCity] = useState('lisboa');
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
     }
-  }, [isAuthenticated, navigate]);
+    
+    if (cityName) {
+      setSelectedCity(cityName.toLowerCase());
+    }
+  }, [isAuthenticated, navigate, cityName]);
 
   if (!isAuthenticated) {
     return null;
@@ -112,12 +116,15 @@ const PricingPage = () => {
     }
   };
 
+  // Garantir que selectedCity é sempre uma chave válida
+  const validCity = ['lisboa', 'porto', 'faro'].includes(selectedCity) ? selectedCity : 'lisboa';
+
   const pricingPlans = [
     {
       name: 'Airpark',
       color: 'from-blue-500 to-blue-600',
       logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png',
-      prices: airparkPrices[selectedCity as keyof typeof airparkPrices],
+      prices: airparkPrices[validCity],
       features: [
         '1-Valet Park',
         '2-Parque Descoberto',
@@ -132,7 +139,7 @@ const PricingPage = () => {
       name: 'Redpark',
       color: 'from-red-500 to-red-600',
       logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png',
-      prices: redparkPrices[selectedCity as keyof typeof redparkPrices],
+      prices: redparkPrices[validCity],
       features: [
         '1-Valet Park',
         '2-Parque Descoberto',
@@ -147,7 +154,7 @@ const PricingPage = () => {
       name: 'Skypark',
       color: 'from-purple-500 to-purple-600',
       logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png',
-      prices: skyparkPrices[selectedCity as keyof typeof skyparkPrices],
+      prices: skyparkPrices[validCity],
       features: [
         '1-Valet Park',
         '2-Parque Descoberto',
