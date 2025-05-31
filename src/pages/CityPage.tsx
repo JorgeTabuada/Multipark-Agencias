@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
-import { DollarSign, Info, Phone } from 'lucide-react';
+import { EuroIcon, Info, Phone } from 'lucide-react';
 import { getRedirectUrl } from '../utils/redirectUtils';
 
 const CityPage = () => {
@@ -49,7 +49,7 @@ const CityPage = () => {
   ];
 
   const infoServices = [
-    { name: 'Preçário', path: 'pricing', color: 'from-green-500 to-green-600', icon: DollarSign },
+    { name: 'Preçário', path: 'pricing', color: 'from-green-500 to-green-600', icon: EuroIcon },
     { name: 'Diferenças', path: 'differences', color: 'from-orange-500 to-orange-600', icon: Info },
     { name: 'Contacto', path: 'contact', color: 'from-gray-500 to-gray-600', icon: Phone }
   ];
@@ -89,7 +89,7 @@ const CityPage = () => {
                     <img 
                       src={service.logo} 
                       alt={`${service.name} logo`} 
-                      className="max-h-16 max-w-full object-contain"
+                      className="h-16 max-w-full object-contain"
                     />
                   </div>
                 </div>
