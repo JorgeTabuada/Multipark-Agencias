@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface User {
   name: string;
@@ -67,74 +67,138 @@ const adminUser: User = {
   status: "active"
 };
 
-// Base de dados de utilizadores ativos
-const validUsers: (User & { password: string })[] = [
+// Utilizadores iniciais pré-definidos
+const initialUsers: User[] = [
   {
     name: "AzulViajante",
     email: "guimaraes1@bestravel.pt",
-    password: "Multipak*",
     role: "user",
     status: "active",
     links: {
       lisbon: {
-        airpark: "https://airpark.pt/agencias/azulviajante/lisbon",
-        redpark: "https://redpark.pt/agencias/azulviajante/lisbon", 
-        skypark: "https://skypark.pt/agencias/azulviajante/lisbon"
+        airpark: "https://multipark.pt/book?city=lisbon&parkBrand=airpark&campaignId=azulviajante_lisbon_airpark",
+        redpark: "https://multipark.pt/book?city=lisbon&parkBrand=redpark&campaignId=azulviajante_lisbon_redpark", 
+        skypark: "https://multipark.pt/book?city=lisbon&parkBrand=skypark&campaignId=azulviajante_lisbon_skypark"
       },
       porto: {
-        airpark: "https://airpark.pt/agencias/azulviajante/porto",
-        redpark: "https://redpark.pt/agencias/azulviajante/porto",
-        skypark: "https://skypark.pt/agencias/azulviajante/porto"
+        airpark: "https://multipark.pt/book?city=porto&parkBrand=airpark&campaignId=azulviajante_porto_airpark",
+        redpark: "https://multipark.pt/book?city=porto&parkBrand=redpark&campaignId=azulviajante_porto_redpark",
+        skypark: "https://multipark.pt/book?city=porto&parkBrand=skypark&campaignId=azulviajante_porto_skypark"
       },
       faro: {
-        airpark: "https://airpark.pt/agencias/azulviajante/faro",
-        redpark: "https://redpark.pt/agencias/azulviajante/faro",
-        skypark: "https://skypark.pt/agencias/azulviajante/faro"
+        airpark: "https://multipark.pt/book?city=faro&parkBrand=airpark&campaignId=azulviajante_faro_airpark",
+        redpark: "https://multipark.pt/book?city=faro&parkBrand=redpark&campaignId=azulviajante_faro_redpark",
+        skypark: "https://multipark.pt/book?city=faro&parkBrand=skypark&campaignId=azulviajante_faro_skypark"
       }
     }
   },
-  // ... resto dos utilizadores com mesmo formato
+  {
+    name: "Bestravel Castelo Branco",
+    email: "castelobranco@bestravel.pt",
+    role: "user",
+    status: "active",
+    links: {
+      lisbon: {
+        airpark: "",
+        redpark: "",
+        skypark: ""
+      },
+      porto: {
+        airpark: "",
+        redpark: "",
+        skypark: ""
+      },
+      faro: {
+        airpark: "",
+        redpark: "",
+        skypark: ""
+      }
+    }
+  }
 ];
 
-// Passwords para todos os utilizadores
-const userPasswords: { [email: string]: string } = {
-  "Info@multipark.pt": "Multipark$25",
-  "guimaraes1@bestravel.pt": "Multipak*",
-  "castelobranco@bestravel.pt": "Multipak*",
-  "evora.mafalda@bestravel.pt": "Multipak*",
-  "francisco@ddviagens.com": "Multipak*",
-  "castelobranco@godiscover.pt": "Multipak*",
-  "viseu@godiscover.pt": "Multipak*",
-  "geral@gurudasviagens.pt": "Multipak*",
-  "carolinasousa@iupytravel.pt": "Multipak*",
-  "andre@lealtours.com": "Multipak*",
-  "agencia@leguasecardeais.pt": "Multipak*",
-  "marco.velez@leiriviagem.pt": "Multipak*",
-  "geral@oesteviagens.pt": "Multipak*",
-  "guia@qviagem.com": "Multipak*",
-  "reservas@sterntravel.pt": "Multipak*",
-  "daniel.tavares@truetraveller.pt": "Multipak*",
-  "geral.viagensecia@gmail.com": "Multipak*",
-  "viagensparasi@gmail.com": "Multipak*",
-  "maia.gerencia@bestravel.pt": "Multipak*",
-  "geral@laviagens.pt": "Multipak*",
-  "87viagens@gmail.com": "Multipak*",
-  "lidia@nztravel.com.pt": "Multipak*",
-  "guimaraes@qviagem.com": "Multipak*",
-  "marinhagrande@qviagem.com": "Multipak*"
+// Keys para localStorage
+const STORAGE_KEYS = {
+  USERS: 'multipark_users',
+  PENDING_USERS: 'multipark_pending_users',
+  PASSWORDS: 'multipark_passwords'
 };
 
-// Estado dos utilizadores pendentes (em memória para demo)
-let pendingUsers: PendingUser[] = [];
+// Função para carregar dados do localStorage
+const loadFromStorage = <T>(key: string, defaultValue: T): T => {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  } catch (error) {
+    console.error(`Erro ao carregar ${key}:`, error);
+    return defaultValue;
+  }
+};
 
-// Estado de utilizadores ativos (incluindo admin)
-let allUsers: User[] = [
-  adminUser,
-  ...validUsers.map(({ password, ...user }) => user)
-];
+// Função para guardar dados no localStorage
+const saveToStorage = <T>(key: string, data: T): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Erro ao guardar ${key}:`, error);
+  }
+};
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  
+  // Estados persistentes
+  const [allUsers, setAllUsers] = useState<User[]>(() => {
+    const stored = loadFromStorage(STORAGE_KEYS.USERS, [adminUser, ...initialUsers]);
+    return stored;
+  });
+  
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>(() => {
+    return loadFromStorage(STORAGE_KEYS.PENDING_USERS, []);
+  });
+  
+  const [userPasswords, setUserPasswords] = useState<{ [email: string]: string }>(() => {
+    const defaultPasswords = {
+      "Info@multipark.pt": "Multipark$25",
+      "guimaraes1@bestravel.pt": "Multipak*",
+      "castelobranco@bestravel.pt": "Multipak*",
+      "evora.mafalda@bestravel.pt": "Multipak*",
+      "francisco@ddviagens.com": "Multipak*",
+      "castelobranco@godiscover.pt": "Multipak*",
+      "viseu@godiscover.pt": "Multipak*",
+      "geral@gurudasviagens.pt": "Multipak*",
+      "carolinasousa@iupytravel.pt": "Multipak*",
+      "andre@lealtours.com": "Multipak*",
+      "agencia@leguasecardeais.pt": "Multipak*",
+      "marco.velez@leiriviagem.pt": "Multipak*",
+      "geral@oesteviagens.pt": "Multipak*",
+      "guia@qviagem.com": "Multipak*",
+      "reservas@sterntravel.pt": "Multipak*",
+      "daniel.tavares@truetraveller.pt": "Multipak*",
+      "geral.viagensecia@gmail.com": "Multipak*",
+      "viagensparasi@gmail.com": "Multipak*",
+      "maia.gerencia@bestravel.pt": "Multipak*",
+      "geral@laviagens.pt": "Multipak*",
+      "87viagens@gmail.com": "Multipak*",
+      "lidia@nztravel.com.pt": "Multipak*",
+      "guimaraes@qviagem.com": "Multipak*",
+      "marinhagrande@qviagem.com": "Multipak*"
+    };
+    return loadFromStorage(STORAGE_KEYS.PASSWORDS, defaultPasswords);
+  });
+
+  // Guardar dados quando houver alterações
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.USERS, allUsers);
+  }, [allUsers]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.PENDING_USERS, pendingUsers);
+  }, [pendingUsers]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.PASSWORDS, userPasswords);
+  }, [userPasswords]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // Check admin
@@ -172,12 +236,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       createdAt: new Date()
     };
 
-    pendingUsers.push(newPendingUser);
+    setPendingUsers(prev => [...prev, newPendingUser]);
     return true;
   };
 
   const forgotPassword = async (email: string): Promise<boolean> => {
-    // In a real app, this would send an email
     const userExists = allUsers.some(u => u.email === email);
     return userExists;
   };
@@ -190,7 +253,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return false;
     }
 
-    userPasswords[user.email] = newPassword;
+    setUserPasswords(prev => ({
+      ...prev,
+      [user.email]: newPassword
+    }));
     return true;
   };
 
@@ -217,19 +283,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       links
     };
 
-    allUsers.push(newUser);
-    userPasswords[newUser.email] = 'Multipak*'; // Default password
+    setAllUsers(prev => [...prev, newUser]);
+    setUserPasswords(prev => ({
+      ...prev,
+      [newUser.email]: 'Multipak*' // Default password
+    }));
     
     // Remove from pending
-    pendingUsers.splice(pendingUserIndex, 1);
+    setPendingUsers(prev => prev.filter(u => u.id !== userId));
     return true;
   };
 
   const rejectUser = async (userId: string): Promise<boolean> => {
-    const pendingUserIndex = pendingUsers.findIndex(u => u.id === userId);
-    if (pendingUserIndex === -1) return false;
-
-    pendingUsers.splice(pendingUserIndex, 1);
+    setPendingUsers(prev => prev.filter(u => u.id !== userId));
     return true;
   };
 
@@ -238,25 +304,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const updateUserStatus = async (email: string, status: User['status']): Promise<boolean> => {
-    const userIndex = allUsers.findIndex(u => u.email === email);
-    if (userIndex === -1) return false;
-
-    allUsers[userIndex].status = status;
+    setAllUsers(prev => prev.map(u => 
+      u.email === email ? { ...u, status } : u
+    ));
     return true;
   };
 
   const updateUserLinks = async (email: string, links: User['links']): Promise<boolean> => {
-    const userIndex = allUsers.findIndex(u => u.email === email);
-    if (userIndex === -1) return false;
-
-    allUsers[userIndex].links = links;
+    setAllUsers(prev => prev.map(u => 
+      u.email === email ? { ...u, links } : u
+    ));
     return true;
   };
 
   const resetUserPassword = async (email: string, newPassword: string): Promise<boolean> => {
     if (!allUsers.some(u => u.email === email)) return false;
 
-    userPasswords[email] = newPassword;
+    setUserPasswords(prev => ({
+      ...prev,
+      [email]: newPassword
+    }));
     return true;
   };
 
