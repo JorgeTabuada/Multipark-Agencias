@@ -67,7 +67,7 @@ const adminUser: User = {
   status: "active"
 };
 
-// Utilizadores iniciais pré-definidos - TODAS AS 27 AGÊNCIAS COM LINKS COMPLETOS
+// TODAS AS 27 AGÊNCIAS COM LINKS E NIFS REAIS DO EXCEL
 const initialUsers: User[] = [
   {
     name: "AzulViajante",
@@ -78,8 +78,8 @@ const initialUsers: User[] = [
     status: "active",
     links: {
       lisbon: {
-        airpark: "https://multipark.pt/book?city=lisbon&parkBrand=airpark&campaignId=azul_lisbon_airpark",
-        redpark: "https://multipark.pt/book?city=lisbon&parkBrand=redpark&campaignId=azul_lisbon_redpark",
+        airpark: "",
+        redpark: "",
         skypark: "https://multipark.pt/book?city=lisbon&parkBrand=skypark&campaignId=wmbK3LocmDBZ6yrBdCHJ"
       },
       porto: {
@@ -143,6 +143,31 @@ const initialUsers: User[] = [
         skypark: "https://multipark.pt/book?city=faro&parkBrand=skypark&campaignId=3E5sktFqMq0U6pRrC8JG"
       }
     }
+  },
+  {
+    name: "Bestravel Évora",
+    email: "evora.mafalda@bestravel.pt",
+    phone: "+351 900 000 000",
+    nif: "515180190",
+    role: "user",
+    status: "active",
+    links: {
+      lisbon: {
+        airpark: "https://multipark.pt/book?city=lisbon&parkBrand=airpark&campaignId=FKu4o8NcE8zBuH7l7zui",
+        redpark: "https://multipark.pt/book?city=lisbon&parkBrand=redpark&campaignId=RqKERGXEiIWQsbBBEkfr",
+        skypark: "https://multipark.pt/book?city=lisbon&parkBrand=skypark&campaignId=A6L7cWiXvhVX5TtOtQT0"
+      },
+      porto: {
+        airpark: "https://multipark.pt/book?city=porto&parkBrand=airpark&campaignId=Ys8Ec7jdJ1hFTXN5fIch",
+        redpark: "https://multipark.pt/book?city=porto&parkBrand=redpark&campaignId=YlPEiFUGsOy2HXuO1DG0",
+        skypark: "https://multipark.pt/book?city=porto&parkBrand=skypark&campaignId=tTwU3yqRE9LFmKEjd8oF"
+      },
+      faro: {
+        airpark: "https://multipark.pt/book?city=faro&parkBrand=airpark&campaignId=Q7PGxVz5AAmBp1wdrwFN",
+        redpark: "https://multipark.pt/book?city=faro&parkBrand=redpark&campaignId=MEKvIr0xK4L7fqgkXyGj",
+        skypark: "https://multipark.pt/book?city=faro&parkBrand=skypark&campaignId=qnsyRLppI7IMXOiuIhIw"
+      }
+    }
   }
 ];
 
@@ -189,9 +214,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userPasswords, setUserPasswords] = useState<{ [email: string]: string }>(() => {
     const defaultPasswords = {
       "Info@multipark.pt": "Multipark$25",
-      "guimaraes1@bestravel.pt": "Multipak*",
-      "beintravel@multipark.pt": "Multipak*",
-      "castelobranco@bestravel.pt": "Multipak*"
+      "guimaraes1@bestravel.pt": "Multipark$",
+      "beintravel@multipark.pt": "Multipark$",
+      "castelobranco@bestravel.pt": "Multipark$",
+      "evora.mafalda@bestravel.pt": "Multipark$"
     };
     return loadFromStorage(STORAGE_KEYS.PASSWORDS, defaultPasswords);
   });
@@ -295,7 +321,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAllUsers(prev => [...prev, newUser]);
     setUserPasswords(prev => ({
       ...prev,
-      [newUser.email]: 'Multipak*' // Default password
+      [newUser.email]: 'Multipark$' // Default password
     }));
     
     // Remove from pending
