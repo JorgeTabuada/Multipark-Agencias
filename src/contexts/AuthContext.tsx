@@ -125,7 +125,7 @@ const STORAGE_KEYS = {
 };
 
 // Função para carregar dados do localStorage
-const loadFromStorage = <T>(key: string, defaultValue: T): T => {
+function loadFromStorage<T>(key: string, defaultValue: T): T {
   try {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : defaultValue;
@@ -133,16 +133,16 @@ const loadFromStorage = <T>(key: string, defaultValue: T): T => {
     console.error(`Erro ao carregar ${key}:`, error);
     return defaultValue;
   }
-};
+}
 
 // Função para guardar dados no localStorage
-const saveToStorage = <T>(key: string, data: T): void => {
+function saveToStorage<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
     console.error(`Erro ao guardar ${key}:`, error);
   }
-};
+}
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
