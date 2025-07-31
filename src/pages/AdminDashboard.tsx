@@ -26,7 +26,10 @@ import {
   Shield,
   CheckCircle,
   XCircle,
-  Edit
+  Edit,
+  ExternalLink,
+  Copy,
+  Save
 } from 'lucide-react';
 import Header from '../components/Header';
 
@@ -35,7 +38,14 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedPendingUser, setSelectedPendingUser] = useState<any>(null);
   const [newPassword, setNewPassword] = useState('');
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+  const [approvalLinks, setApprovalLinks] = useState({
+    lisbon: { airpark: '', redpark: '', skypark: '' },
+    porto: { airpark: '', redpark: '', skypark: '' },
+    faro: { airpark: '', redpark: '', skypark: '' }
+  });
   const [linkFormData, setLinkFormData] = useState({
     lisbon: { airpark: '', redpark: '', skypark: '' },
     porto: { airpark: '', redpark: '', skypark: '' },
@@ -55,31 +65,73 @@ const AdminDashboard = () => {
   const pendingUsers = getPendingUsers();
   const allUsers = getAllUsers();
 
-  const handleApproveUser = async (userId: string) => {
+  const openApprovalDialog = (pendingUser: any) => {
+    setSelectedPendingUser(pendingUser);
+    // Reset links
+    setApprovalLinks({
+      lisbon: { airpark: '', redpark: '', skypark: '' },
+      porto: { airpark: '', redpark: '', skypark: '' },
+      faro: { airpark: '', redpark: '', skypark: '' }
+    });
+    setShowApprovalDialog(true);
+  };
+
+  const handleCreateLinks = (userId: string, userName: string) => {
+    // Generate template links for easy copying
+    const baseTemplate = "https://multipark.pt/book?city={city}&parkBrand={brand}&campaignId=";
+    const agencySlug = userName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    const templateLinks = {
+      lisbon: {
+        airpark: `${baseTemplate.replace('{city}', 'lisbon').replace('{brand}', 'airpark')}${agencySlug}_lisboa_airpark`,
+        redpark: `${baseTemplate.replace('{city}', 'lisbon').replace('{brand}', 'redpark')}${agencySlug}_lisboa_redpark`,
+        skypark: `${baseTemplate.replace('{city}', 'lisbon').replace('{brand}', 'skypark')}${agencySlug}_lisboa_skypark`
+      },
+      porto: {
+        airpark: `${baseTemplate.replace('{city}', 'porto').replace('{brand}', 'airpark')}${agencySlug}_porto_airpark`,
+        redpark: `${baseTemplate.replace('{city}', 'porto').replace('{brand}', 'redpark')}${agencySlug}_porto_redpark`,
+        skypark: `${baseTemplate.replace('{city}', 'porto').replace('{brand}', 'skypark')}${agencySlug}_porto_skypark`
+      },
+      faro: {
+        airpark: `${baseTemplate.replace('{city}', 'faro').replace('{brand}', 'airpark')}${agencySlug}_faro_airpark`,
+        redpark: `${baseTemplate.replace('{city}', 'faro').replace('{brand}', 'redpark')}${agencySlug}_faro_redpark`,
+        skypark: `${baseTemplate.replace('{city}', 'faro').replace('{brand}', 'skypark')}${agencySlug}_faro_skypark`
+      }
+    };
+
+    setApprovalLinks(templateLinks);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Link copiado para clipboard!');
+  };
+
+  const handleApproveUser = async () => {
+    if (!selectedPendingUser) return;
+
+    // Validate that all links are filled
+    let allLinksValid = true;
+    Object.values(approvalLinks).forEach(city => {
+      Object.values(city).forEach(link => {
+        if (!link.trim()) {
+          allLinksValid = false;
+        }
+      });
+    });
+
+    if (!allLinksValid) {
+      toast.error('Por favor, preencha todos os 9 links antes de aprovar');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Create default links based on user name
-      const defaultLinks = {
-        lisbon: {
-          airpark: `https://airpark.pt/agencias/${userId}/lisbon`,
-          redpark: `https://redpark.pt/agencias/${userId}/lisbon`,
-          skypark: `https://skypark.pt/agencias/${userId}/lisbon`
-        },
-        porto: {
-          airpark: `https://airpark.pt/agencias/${userId}/porto`,
-          redpark: `https://redpark.pt/agencias/${userId}/porto`,
-          skypark: `https://skypark.pt/agencias/${userId}/porto`
-        },
-        faro: {
-          airpark: `https://airpark.pt/agencias/${userId}/faro`,
-          redpark: `https://redpark.pt/agencias/${userId}/faro`,
-          skypark: `https://skypark.pt/agencias/${userId}/faro`
-        }
-      };
-
-      const success = await approveUser(userId, defaultLinks);
+      const success = await approveUser(selectedPendingUser.id, approvalLinks);
       if (success) {
-        toast.success('Utilizador aprovado com sucesso!');
+        toast.success('Utilizador aprovado com sucesso! Todos os links foram configurados.');
+        setShowApprovalDialog(false);
+        setSelectedPendingUser(null);
       } else {
         toast.error('Erro ao aprovar utilizador');
       }
@@ -172,6 +224,24 @@ const AdminDashboard = () => {
     });
   };
 
+  const cityNames = {
+    lisbon: 'Lisboa',
+    porto: 'Porto',
+    faro: 'Faro'
+  };
+
+  const brandNames = {
+    airpark: 'Airpark',
+    redpark: 'Redpark',
+    skypark: 'Skypark'
+  };
+
+  const brandColors = {
+    airpark: 'bg-blue-500',
+    redpark: 'bg-red-500',
+    skypark: 'bg-purple-500'
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Header />
@@ -213,7 +283,7 @@ const AdminDashboard = () => {
                   Pedidos de Registo Pendentes
                 </CardTitle>
                 <CardDescription>
-                  Novos pedidos de agências aguardando aprovação
+                  Novos pedidos de agências aguardando aprovação. <strong>Importante:</strong> Tens que configurar os 9 links únicos (3 cidades × 3 marcas) para cada agência.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -264,13 +334,13 @@ const AdminDashboard = () => {
                             </div>
                             <div className="flex gap-2 ml-4">
                               <Button
-                                onClick={() => handleApproveUser(pendingUser.id)}
+                                onClick={() => openApprovalDialog(pendingUser)}
                                 size="sm"
                                 className="bg-green-600 hover:bg-green-700"
                                 disabled={loading}
                               >
                                 <UserCheck className="w-4 h-4 mr-1" />
-                                Aprovar
+                                Aprovar & Configurar Links
                               </Button>
                               <Button
                                 onClick={() => handleRejectUser(pendingUser.id)}
@@ -398,32 +468,51 @@ const AdminDashboard = () => {
                                   Links
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                                 <DialogHeader>
                                   <DialogTitle>Gerir Links - {user.name}</DialogTitle>
                                   <DialogDescription>
-                                    Configure os links de acesso para cada cidade e marca
+                                    Configure os links de acesso únicos para cada cidade e marca desta agência
                                   </DialogDescription>
                                 </DialogHeader>
                                 <div className="space-y-6">
-                                  {['lisbon', 'porto', 'faro'].map((city) => (
-                                    <div key={city} className="space-y-3">
-                                      <h4 className="font-medium capitalize text-lg">{city === 'lisbon' ? 'Lisboa' : city === 'porto' ? 'Porto' : 'Faro'}</h4>
-                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        {['airpark', 'redpark', 'skypark'].map((brand) => (
-                                          <div key={brand} className="space-y-1">
-                                            <Label className="text-sm capitalize">{brand}</Label>
-                                            <Input
-                                              placeholder={`Link ${brand} ${city}`}
-                                              value={linkFormData[city as keyof typeof linkFormData][brand as keyof typeof linkFormData[typeof city]]}
-                                              onChange={(e) => setLinkFormData(prev => ({
-                                                ...prev,
-                                                [city]: {
-                                                  ...prev[city as keyof typeof prev],
-                                                  [brand]: e.target.value
-                                                }
-                                              }))}
-                                            />
+                                  {Object.entries(cityNames).map(([cityKey, cityName]) => (
+                                    <div key={cityKey} className="space-y-3">
+                                      <h4 className="font-medium text-lg flex items-center gap-2">
+                                        <div className={`w-3 h-3 rounded-full ${cityKey === 'lisbon' ? 'bg-blue-500' : cityKey === 'porto' ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                                        {cityName}
+                                      </h4>
+                                      <div className="grid grid-cols-1 gap-4">
+                                        {Object.entries(brandNames).map(([brandKey, brandName]) => (
+                                          <div key={brandKey} className="space-y-2">
+                                            <Label className="text-sm font-medium flex items-center gap-2">
+                                              <div className={`w-3 h-3 rounded-full ${brandColors[brandKey as keyof typeof brandColors]}`}></div>
+                                              {brandName}
+                                            </Label>
+                                            <div className="flex gap-2">
+                                              <Input
+                                                placeholder={`Link ${brandName} ${cityName} - https://multipark.pt/book?city=${cityKey}&parkBrand=${brandKey}&campaignId=...`}
+                                                value={linkFormData[cityKey as keyof typeof linkFormData][brandKey as keyof typeof linkFormData[typeof cityKey]]}
+                                                onChange={(e) => setLinkFormData(prev => ({
+                                                  ...prev,
+                                                  [cityKey]: {
+                                                    ...prev[cityKey as keyof typeof prev],
+                                                    [brandKey]: e.target.value
+                                                  }
+                                                }))}
+                                                className="flex-1"
+                                              />
+                                              {linkFormData[cityKey as keyof typeof linkFormData][brandKey as keyof typeof linkFormData[typeof cityKey]] && (
+                                                <Button
+                                                  type="button"
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => window.open(linkFormData[cityKey as keyof typeof linkFormData][brandKey as keyof typeof linkFormData[typeof cityKey]], '_blank')}
+                                                >
+                                                  <ExternalLink className="w-4 h-4" />
+                                                </Button>
+                                              )}
+                                            </div>
                                           </div>
                                         ))}
                                       </div>
@@ -435,7 +524,7 @@ const AdminDashboard = () => {
                                     className="w-full"
                                     disabled={loading}
                                   >
-                                    <Edit className="w-4 h-4 mr-2" />
+                                    <Save className="w-4 h-4 mr-2" />
                                     Atualizar Links
                                   </Button>
                                 </div>
@@ -497,6 +586,129 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Dialog de Aprovação com Configuração de Links */}
+        <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <UserCheck className="w-5 h-5 text-green-600" />
+                Aprovar Agência: {selectedPendingUser?.name}
+              </DialogTitle>
+              <DialogDescription>
+                Configure os 9 links únicos desta agência (3 cidades × 3 marcas). Cada link deve ser criado no sistema de reservas e colado aqui.
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedPendingUser && (
+              <div className="space-y-6">
+                {/* Informações da agência */}
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardContent className="pt-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div><strong>Nome:</strong> {selectedPendingUser.name}</div>
+                      <div><strong>Email:</strong> {selectedPendingUser.email}</div>
+                      <div><strong>Telefone:</strong> {selectedPendingUser.phone}</div>
+                      <div><strong>NIF:</strong> {selectedPendingUser.nif}</div>
+                    </div>
+                    {selectedPendingUser.observations && (
+                      <div className="mt-3">
+                        <strong>Observações:</strong> {selectedPendingUser.observations}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Botão para gerar templates */}
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => handleCreateLinks(selectedPendingUser.id, selectedPendingUser.name)}
+                    variant="outline"
+                    className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Gerar Templates de Links
+                  </Button>
+                </div>
+
+                {/* Configuração de Links */}
+                <div className="space-y-6">
+                  {Object.entries(cityNames).map(([cityKey, cityName]) => (
+                    <Card key={cityKey} className="border-l-4 border-l-blue-500">
+                      <CardHeader className="pb-3">
+                        <h4 className="font-medium text-lg flex items-center gap-2">
+                          <div className={`w-4 h-4 rounded-full ${cityKey === 'lisbon' ? 'bg-blue-500' : cityKey === 'porto' ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                          {cityName}
+                        </h4>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {Object.entries(brandNames).map(([brandKey, brandName]) => (
+                          <div key={brandKey} className="space-y-2">
+                            <Label className="text-sm font-medium flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${brandColors[brandKey as keyof typeof brandColors]}`}></div>
+                              {brandName} - {cityName}
+                              <Badge variant="outline" className="ml-2 text-xs">
+                                Obrigatório
+                              </Badge>
+                            </Label>
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder={`Cole aqui o link único para ${brandName} em ${cityName}`}
+                                value={approvalLinks[cityKey as keyof typeof approvalLinks][brandKey as keyof typeof approvalLinks[typeof cityKey]]}
+                                onChange={(e) => setApprovalLinks(prev => ({
+                                  ...prev,
+                                  [cityKey]: {
+                                    ...prev[cityKey as keyof typeof prev],
+                                    [brandKey]: e.target.value
+                                  }
+                                }))}
+                                className="flex-1"
+                              />
+                              {approvalLinks[cityKey as keyof typeof approvalLinks][brandKey as keyof typeof approvalLinks[typeof cityKey]] && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(approvalLinks[cityKey as keyof typeof approvalLinks][brandKey as keyof typeof approvalLinks[typeof cityKey]])}
+                                >
+                                  <Copy className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Botões de ação */}
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    onClick={handleApproveUser}
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    disabled={loading}
+                  >
+                    <UserCheck className="w-4 h-4 mr-2" />
+                    {loading ? 'A aprovar...' : 'Aprovar Agência com Links'}
+                  </Button>
+                  <Button
+                    onClick={() => setShowApprovalDialog(false)}
+                    variant="outline"
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+
+                <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+                  <strong>Nota:</strong> Todos os 9 links devem ser preenchidos antes de aprovar a agência. 
+                  Cada link deve ser único e conter as comissões específicas desta agência.
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
