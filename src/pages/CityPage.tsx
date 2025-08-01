@@ -1,9 +1,8 @@
-
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
-import { DollarSign, Info, Phone, AlertCircle, ExternalLink } from 'lucide-react';
+import { Euro, Info, Phone, AlertCircle, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 
@@ -53,24 +52,27 @@ const CityPage = () => {
       name: 'Airpark', 
       color: 'from-blue-500 to-blue-600',
       hoverColor: 'hover:from-blue-600 hover:to-blue-700',
-      logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png'
+      logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png',
+      description: 'Estacionamento aeroportuário premium'
     },
     { 
       name: 'Redpark', 
       color: 'from-red-500 to-red-600',
       hoverColor: 'hover:from-red-600 hover:to-red-700',
-      logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png'
+      logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png',
+      description: 'Soluções urbanas de estacionamento'
     },
     { 
       name: 'Skypark', 
       color: 'from-purple-500 to-purple-600',
       hoverColor: 'hover:from-purple-600 hover:to-purple-700',
-      logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png'
+      logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png',
+      description: 'Estacionamento premium com serviços VIP'
     }
   ];
 
   const infoServices = [
-    { name: 'Preçário', path: 'pricing', color: 'from-green-500 to-green-600', icon: DollarSign },
+    { name: 'Preçário', path: 'pricing', color: 'from-green-500 to-green-600', icon: Euro },
     { name: 'Diferenças', path: 'differences', color: 'from-orange-500 to-orange-600', icon: Info },
     { name: 'Contacto', path: 'contact', color: 'from-gray-500 to-gray-600', icon: Phone }
   ];
@@ -96,7 +98,7 @@ const CityPage = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-5xl mx-auto space-y-12">
           {/* Alert se não tiver links configurados */}
           {!hasLinksConfigured && (
             <Card className="border-amber-200 bg-amber-50">
@@ -112,12 +114,12 @@ const CityPage = () => {
             </Card>
           )}
 
-          {/* Primeira fila - Serviços de Estacionamento */}
+          {/* Primeira secção - Serviços de Estacionamento */}
           <div>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-8 text-center">
               Serviços de Estacionamento
             </h3>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
               {parkingServices.map((service) => {
                 const brandKey = service.name.toLowerCase() as 'airpark' | 'redpark' | 'skypark';
                 const hasLink = cityLinks && cityLinks[brandKey] && cityLinks[brandKey].trim() !== '';
@@ -126,37 +128,44 @@ const CityPage = () => {
                   <div
                     key={service.name}
                     onClick={() => handleParkingServiceClick(service.name)}
-                    className={`group relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 transform cursor-pointer bg-white
+                    className={`group relative overflow-hidden rounded-2xl shadow-lg transition-all duration-300 cursor-pointer bg-white
                       ${hasLink 
-                        ? `hover:shadow-2xl hover:-translate-y-2 ${service.hoverColor}` 
+                        ? `hover:shadow-2xl hover:-translate-y-2` 
                         : 'opacity-60 cursor-not-allowed'
                       }
                     `}
                   >
-                    <div className={`bg-gradient-to-br ${service.color} p-6 text-white min-h-[120px] flex flex-col justify-center items-center relative`}>
-                      <h4 className="text-xl font-bold mb-2">{service.name}</h4>
+                    {/* Header colorido */}
+                    <div className={`bg-gradient-to-br ${service.color} p-6 text-white text-center relative`}>
+                      <h4 className="text-2xl font-bold mb-2">{service.name}</h4>
                       
                       {hasLink ? (
-                        <div className="flex items-center gap-1 text-sm opacity-80">
-                          <ExternalLink className="w-3 h-3" />
+                        <div className="flex items-center justify-center gap-1 text-sm opacity-90 mb-3">
+                          <ExternalLink className="w-4 h-4" />
                           <span>Clique para reservar</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-1 text-sm opacity-80">
-                          <AlertCircle className="w-3 h-3" />
+                        <div className="flex items-center justify-center gap-1 text-sm opacity-90 mb-3">
+                          <AlertCircle className="w-4 h-4" />
                           <span>Link não configurado</span>
                         </div>
                       )}
+                      
+                      <p className="text-sm opacity-90">{service.description}</p>
                       
                       {hasLink && (
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       )}
                     </div>
-                    <div className="p-6 bg-white flex items-center justify-center min-h-[120px]">
+                    
+                    {/* Logo */}
+                    <div className="p-8 bg-white flex items-center justify-center min-h-[140px]">
                       <img 
                         src={service.logo} 
                         alt={`${service.name} logo`} 
-                        className={`max-h-16 max-w-full object-contain transition-opacity duration-300 ${hasLink ? '' : 'opacity-50'}`}
+                        className={`max-h-20 max-w-full object-contain transition-all duration-300 ${
+                          hasLink ? 'group-hover:scale-110' : 'opacity-50'
+                        }`}
                       />
                     </div>
                   </div>
@@ -178,21 +187,21 @@ const CityPage = () => {
             </Card>
           )}
 
-          {/* Segunda fila - Informações */}
+          {/* Segunda secção - Informações */}
           <div>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-8 text-center">
               Informações
             </h3>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
               {infoServices.map((service) => (
                 <Link
                   key={service.name}
                   to={service.path === 'contact' ? '/contact' : `/${service.path}/${cityName}`}
                   className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
                 >
-                  <div className={`bg-gradient-to-br ${service.color} p-8 text-white min-h-[180px] flex flex-col justify-center items-center`}>
-                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <service.icon size={32} />
+                  <div className={`bg-gradient-to-br ${service.color} p-8 text-white min-h-[200px] flex flex-col justify-center items-center relative`}>
+                    <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <service.icon size={36} />
                     </div>
                     <h4 className="text-xl font-bold">{service.name}</h4>
                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
