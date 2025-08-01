@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
-import { Info, Star, Shield, Car, Wifi, Coffee, CheckCircle, XCircle } from 'lucide-react';
+import { Info, Star, Shield, Car, Wifi, Coffee, CheckCircle, XCircle, Clock, MapPin } from 'lucide-react';
 
 const DifferencesPage = () => {
   const { cityName } = useParams<{ cityName: string }>();
@@ -32,44 +32,68 @@ const DifferencesPage = () => {
       color: 'from-blue-500 to-blue-600',
       logo: '/lovable-uploads/5b2012cb-8205-49b0-9d26-1432a5dc7a97.png',
       rating: 4.8,
-      description: 'Serviço premium com cobertura total',
+      description: 'Serviço premium com proximidade ao aeroporto',
+      distance: '2,5 km',
+      details: {
+        valetPartida: 'À sua espera nas partidas',
+        valetChegada: 'Máximo 10 minutos',
+        parqueDescoberto: 'Alcatrão',
+        parqueCoberto: 'Acimentado',
+        parqueIndoor: 'Acimentado'
+      },
       features: [
-        { icon: Shield, text: 'Estacionamento coberto', available: true },
-        { icon: Car, text: 'Shuttle gratuito 24/7', available: true },
-        { icon: Star, text: 'Segurança máxima', available: true },
-        { icon: Wifi, text: 'WiFi gratuito', available: true },
-        { icon: Coffee, text: 'Área de espera', available: true },
-        { icon: Car, text: 'Serviço valet', available: false }
+        { icon: MapPin, text: 'Distância: 2,5 km do aeroporto', available: true },
+        { icon: Clock, text: 'Valet partida: À sua espera', available: true },
+        { icon: Clock, text: 'Valet chegada: Máx 10 min', available: true },
+        { icon: Shield, text: 'Parque coberto: Acimentado', available: true },
+        { icon: Car, text: 'Parque indoor: Acimentado', available: true },
+        { icon: Star, text: 'Serviço premium', available: true }
       ]
     },
     {
       name: 'Redpark',
       color: 'from-red-500 to-red-600',
       logo: '/lovable-uploads/4d541e8b-f168-4891-887c-0194fc8c578a.png',
-      rating: 4.5,
-      description: 'Opção económica e eficiente',
+      rating: 4.6,
+      description: 'Opção equilibrada com boa qualidade-preço',
+      distance: '5 km',
+      details: {
+        valetPartida: 'A 10 minutos',
+        valetChegada: 'Máximo 15 minutos',
+        parqueDescoberto: 'Tuvena',
+        parqueCoberto: 'Alcatroado',
+        parqueIndoor: 'Acimentado'
+      },
       features: [
-        { icon: Shield, text: 'Estacionamento ao ar livre', available: true },
-        { icon: Car, text: 'Shuttle de 15 em 15 min', available: true },
-        { icon: Star, text: 'Vigilância por câmaras', available: true },
-        { icon: Wifi, text: 'WiFi básico', available: true },
-        { icon: Coffee, text: 'Área de espera', available: false },
-        { icon: Car, text: 'Serviço valet', available: false }
+        { icon: MapPin, text: 'Distância: 5 km do aeroporto', available: true },
+        { icon: Clock, text: 'Valet partida: 10 minutos', available: true },
+        { icon: Clock, text: 'Valet chegada: Máx 15 min', available: true },
+        { icon: Shield, text: 'Parque coberto: Alcatroado', available: true },
+        { icon: Car, text: 'Parque indoor: Acimentado', available: true },
+        { icon: Star, text: 'Boa qualidade-preço', available: true }
       ]
     },
     {
       name: 'Skypark',
       color: 'from-purple-500 to-purple-600',
       logo: '/lovable-uploads/19090a30-ee41-4534-99d4-ed488471f1f3.png',
-      rating: 5.0,
-      description: 'Experiência VIP completa',
+      rating: 4.3,
+      description: 'Opção mais distante com infraestrutura variada',
+      distance: '8 km',
+      details: {
+        valetPartida: '15 minutos',
+        valetChegada: 'Máximo 20 minutos',
+        parqueDescoberto: 'Tuvena',
+        parqueCoberto: 'Tuvena',
+        parqueIndoor: 'Alcatroado'
+      },
       features: [
-        { icon: Shield, text: 'Estacionamento premium', available: true },
-        { icon: Car, text: 'Shuttle exclusivo', available: true },
-        { icon: Star, text: 'Segurança máxima', available: true },
-        { icon: Wifi, text: 'WiFi de alta velocidade', available: true },
-        { icon: Coffee, text: 'Lounge VIP', available: true },
-        { icon: Car, text: 'Serviço valet incluído', available: true }
+        { icon: MapPin, text: 'Distância: 8 km do aeroporto', available: true },
+        { icon: Clock, text: 'Valet partida: 15 minutos', available: true },
+        { icon: Clock, text: 'Valet chegada: Máx 20 min', available: true },
+        { icon: Shield, text: 'Parque coberto: Tuvena', available: true },
+        { icon: Car, text: 'Parque indoor: Alcatroado', available: true },
+        { icon: Star, text: 'Infraestrutura variada', available: true }
       ]
     }
   ];
@@ -133,7 +157,12 @@ const DifferencesPage = () => {
                       <span className="ml-2 text-sm font-semibold">{service.rating}</span>
                     </div>
                   </div>
-                  <p className="text-center text-white/90 text-sm">{service.description}</p>
+                  <p className="text-center text-white/90 text-sm mb-2">{service.description}</p>
+                  <div className="text-center">
+                    <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold">
+                      {service.distance} do aeroporto
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="p-6">
@@ -141,20 +170,10 @@ const DifferencesPage = () => {
                   <ul className="space-y-3">
                     {service.features.map((feature, index) => (
                       <li key={index} className="flex items-center space-x-3">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                          feature.available 
-                            ? 'text-green-600' 
-                            : 'text-gray-400'
-                        }`}>
-                          {feature.available ? (
-                            <CheckCircle size={18} className="text-green-600" />
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
+                        <div className="text-blue-600">
+                          <feature.icon size={16} />
                         </div>
-                        <span className={`text-sm ${
-                          feature.available ? 'text-gray-700' : 'text-gray-400'
-                        }`}>
+                        <span className="text-sm text-gray-700">
                           {feature.text}
                         </span>
                       </li>
@@ -167,13 +186,13 @@ const DifferencesPage = () => {
 
           <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-blue-100 p-8">
             <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-              Resumo Comparativo
+              Resumo Comparativo Detalhado
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-gray-200">
-                    <th className="text-left py-4 px-4 font-semibold text-gray-800">Característica</th>
+                    <th className="text-left py-4 px-4 font-semibold text-gray-800">Tópicos</th>
                     <th className="text-center py-4 px-4 font-semibold text-blue-600">Airpark</th>
                     <th className="text-center py-4 px-4 font-semibold text-red-600">Redpark</th>
                     <th className="text-center py-4 px-4 font-semibold text-purple-600">Skypark</th>
@@ -181,52 +200,76 @@ const DifferencesPage = () => {
                 </thead>
                 <tbody>
                   <tr className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-700 font-medium">Preço por dia</td>
-                    <td className="text-center py-4 px-4 font-semibold">15.00€</td>
-                    <td className="text-center py-4 px-4 font-semibold">12.00€</td>
-                    <td className="text-center py-4 px-4 font-semibold">18.00€</td>
+                    <td className="py-4 px-4 text-gray-700 font-medium">
+                      Valet Park Partida
+                      <br />
+                      <small className="text-gray-500">*ligar 10min antes</small>
+                    </td>
+                    <td className="text-center py-4 px-4 font-semibold text-green-600">À sua espera nas partidas</td>
+                    <td className="text-center py-4 px-4 font-semibold">A 10 minutos</td>
+                    <td className="text-center py-4 px-4 font-semibold">15 minutos</td>
                   </tr>
                   <tr className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-700 font-medium">Cobertura</td>
-                    <td className="text-center py-4 px-4">
-                      <CheckCircle className="text-green-600 w-5 h-5 mx-auto" />
+                    <td className="py-4 px-4 text-gray-700 font-medium">
+                      Valet Park Chegada
+                      <br />
+                      <small className="text-gray-500">*ligar com bagagem</small>
                     </td>
-                    <td className="text-center py-4 px-4">
-                      <XCircle className="text-red-600 w-5 h-5 mx-auto" />
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <CheckCircle className="text-green-600 w-5 h-5 mx-auto" />
-                    </td>
+                    <td className="text-center py-4 px-4 font-semibold text-green-600">Máximo 10 minutos</td>
+                    <td className="text-center py-4 px-4 font-semibold">Máximo 15 minutos</td>
+                    <td className="text-center py-4 px-4 font-semibold">Máximo 20 minutos</td>
                   </tr>
                   <tr className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-700 font-medium">Serviço Valet</td>
-                    <td className="text-center py-4 px-4">
-                      <XCircle className="text-red-600 w-5 h-5 mx-auto" />
+                    <td className="py-4 px-4 text-gray-700 font-medium">Parque Descoberto</td>
+                    <td className="text-center py-4 px-4 font-semibold">Alcatrão</td>
+                    <td className="text-center py-4 px-4 font-semibold">Tuvena</td>
+                    <td className="text-center py-4 px-4 font-semibold">Tuvena</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-4 px-4 text-gray-700 font-medium">Parque Coberto</td>
+                    <td className="text-center py-4 px-4 font-semibold">Acimentado</td>
+                    <td className="text-center py-4 px-4 font-semibold">Alcatroado</td>
+                    <td className="text-center py-4 px-4 font-semibold">Tuvena</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-4 px-4 text-gray-700 font-medium">Parque Indoor</td>
+                    <td className="text-center py-4 px-4 font-semibold">Acimentado</td>
+                    <td className="text-center py-4 px-4 font-semibold">Acimentado</td>
+                    <td className="text-center py-4 px-4 font-semibold">Alcatroado</td>
+                  </tr>
+                  <tr className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-4 px-4 text-gray-700 font-medium">
+                      Distância do Parque
+                      <br />
+                      <small className="text-gray-500">*carros podem ser movimentados</small>
                     </td>
-                    <td className="text-center py-4 px-4">
-                      <XCircle className="text-red-600 w-5 h-5 mx-auto" />
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <CheckCircle className="text-green-600 w-5 h-5 mx-auto" />
-                    </td>
+                    <td className="text-center py-4 px-4 font-semibold text-green-600">2,5 km</td>
+                    <td className="text-center py-4 px-4 font-semibold">5 km</td>
+                    <td className="text-center py-4 px-4 font-semibold">8 km</td>
                   </tr>
                   <tr className="hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-700 font-medium">Avaliação</td>
+                    <td className="py-4 px-4 text-gray-700 font-medium">Avaliação Clientes</td>
                     <td className="text-center py-4 px-4">
-                      <span className="font-semibold">4.8</span>
+                      <span className="font-bold text-lg">4.8</span>
                       <span className="text-yellow-500 ml-1">⭐</span>
                     </td>
                     <td className="text-center py-4 px-4">
-                      <span className="font-semibold">4.5</span>
+                      <span className="font-bold text-lg">4.6</span>
                       <span className="text-yellow-500 ml-1">⭐</span>
                     </td>
                     <td className="text-center py-4 px-4">
-                      <span className="font-semibold">5.0</span>
+                      <span className="font-bold text-lg">4.3</span>
                       <span className="text-yellow-500 ml-1">⭐</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+            
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Nota:</strong> Na hora da chegada, os carros podem ser movimentados de um parque para outro para fins de arrumação.
+              </p>
             </div>
           </div>
         </div>
