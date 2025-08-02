@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Fundo quadrado roxo -->
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="url(#bg)" stroke="#ffffff" stroke-width="0.5"/>
+  
+  <!-- Letra M para Multipark -->
+  <path d="M7 24 L7 8 L10 8 L13 18 L16 8 L19 18 L22 8 L25 8 L25 24 L22 24 L22 12 L19 24 L13 24 L10 12 L10 24 Z" 
+        fill="white"/>
+</svg>
