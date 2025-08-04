@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,13 +29,16 @@ import {
   Edit,
   ExternalLink,
   Copy,
-  Save
+  Save,
+  Loader2
 } from 'lucide-react';
 import Header from '../components/Header';
 
 const AdminDashboard = () => {
   const { user, isAdmin, getPendingUsers, approveUser, rejectUser, getAllUsers, updateUserStatus, updateUserLinks, resetUserPassword } = useAuth();
   const navigate = useNavigate();
+  
+  // Estados originais
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [selectedPendingUser, setSelectedPendingUser] = useState<any>(null);
@@ -52,18 +55,63 @@ const AdminDashboard = () => {
     faro: { airpark: '', redpark: '', skypark: '' }
   });
 
-  React.useEffect(() => {
+  // ✅ NOVOS ESTADOS PARA CORRIGIR O ERRO
+  const [pendingUsers, setPendingUsers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  // Verificação de admin
+  useEffect(() => {
     if (!isAdmin) {
       navigate('/login');
     }
   }, [isAdmin, navigate]);
 
+  // ✅ CARREGAR DADOS DE FORMA ASSÍNCRONA
+  const loadData = async () => {
+    try {
+      setDataLoading(true);
+      
+      const [pending, users] = await Promise.all([
+        getPendingUsers(),
+        getAllUsers()
+      ]);
+      
+      setPendingUsers(pending || []);
+      setAllUsers(users || []);
+      
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      setPendingUsers([]);
+      setAllUsers([]);
+      toast.error('Erro ao carregar dados do dashboard');
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  // Carregar dados na inicialização
+  useEffect(() => {
+    if (isAdmin) {
+      loadData();
+    }
+  }, [isAdmin, getPendingUsers, getAllUsers]);
+
   if (!isAdmin) {
     return null;
   }
 
-  const pendingUsers = getPendingUsers();
-  const allUsers = getAllUsers();
+  // ✅ LOADING STATE
+  if (dataLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">A carregar dashboard administrativo...</p>
+        </div>
+      </div>
+    );
+  }
 
   const openApprovalDialog = (pendingUser: any) => {
     setSelectedPendingUser(pendingUser);
@@ -132,6 +180,8 @@ const AdminDashboard = () => {
         toast.success('Utilizador aprovado com sucesso! Todos os links foram configurados.');
         setShowApprovalDialog(false);
         setSelectedPendingUser(null);
+        // ✅ REFRESH DADOS
+        await loadData();
       } else {
         toast.error('Erro ao aprovar utilizador');
       }
@@ -148,6 +198,8 @@ const AdminDashboard = () => {
       const success = await rejectUser(userId);
       if (success) {
         toast.success('Utilizador rejeitado');
+        // ✅ REFRESH DADOS
+        await loadData();
       } else {
         toast.error('Erro ao rejeitar utilizador');
       }
@@ -165,6 +217,8 @@ const AdminDashboard = () => {
       const success = await updateUserStatus(email, newStatus as any);
       if (success) {
         toast.success(`Utilizador ${newStatus === 'active' ? 'ativado' : 'desativado'}`);
+        // ✅ REFRESH DADOS
+        await loadData();
       } else {
         toast.error('Erro ao alterar status');
       }
@@ -205,6 +259,8 @@ const AdminDashboard = () => {
       if (success) {
         toast.success('Links atualizados com sucesso!');
         setSelectedUser(null);
+        // ✅ REFRESH DADOS
+        await loadData();
       } else {
         toast.error('Erro ao atualizar links');
       }
